@@ -1,8 +1,9 @@
-import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 
+import 'package:animate_do/animate_do.dart';
+import 'package:card_swiper/card_swiper.dart';
+
 import 'package:cinemapedia/domain/entities/movie.dart';
-import 'package:flutter/widgets.dart';
 
 class MoviesSlideshow extends StatelessWidget {
   final List<Movie> movies;
@@ -37,6 +38,45 @@ class _Slide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final decoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 10,
+          offset: Offset(0, 10),
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: DecoratedBox(
+        decoration: decoration,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Image.network(
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress != null) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              }
+
+              return FadeIn(
+                child: child,
+              );
+            },
+            movie.backdropPath,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
 }
