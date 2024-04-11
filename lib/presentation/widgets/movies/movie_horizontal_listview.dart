@@ -1,3 +1,4 @@
+import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animate_do/animate_do.dart';
@@ -139,7 +140,6 @@ class _Slide extends StatelessWidget {
               movie.title,
               maxLines: 1,
               style: textStyles.titleSmall,
-              // textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -157,9 +157,9 @@ class _Slide extends StatelessWidget {
                 style: textStyles.bodyMedium
                     ?.copyWith(color: Colors.yellow.shade800),
               ),
-              const SizedBox(width: 3),
+              const SizedBox(width: 10),
               Text(
-                movie.popularity.toString(),
+                HumanFormats.number(movie.popularity),
                 style: textStyles.bodyMedium,
               )
             ],
