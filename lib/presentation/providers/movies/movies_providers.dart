@@ -33,10 +33,10 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
 
 final nowPlayingMoviesProvider =
     StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
-  final getNowPlayingMovies = ref.watch(movieRepositoryProvider).getNowPlaying;
+  final fetchMoreMovies = ref.watch(movieRepositoryProvider).getNowPlaying;
 
   return MoviesNotifier(
-    fetchMoreMovies: getNowPlayingMovies,
+    fetchMoreMovies: fetchMoreMovies,
   );
 });
 
@@ -49,11 +49,20 @@ final popularMoviesProvider =
   );
 });
 
-final upcomingMoviesProvider =
+final topRatedMoviesProvider =
     StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
-  final getUpcomingMovies = ref.watch(movieRepositoryProvider).getUpcoming;
+  final fetchMoreMovies = ref.watch(movieRepositoryProvider).getTopRated;
 
   return MoviesNotifier(
-    fetchMoreMovies: getUpcomingMovies,
+    fetchMoreMovies: fetchMoreMovies,
+  );
+});
+
+final upcomingMoviesProvider =
+    StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
+  final fetchMoreMovies = ref.watch(movieRepositoryProvider).getUpcoming;
+
+  return MoviesNotifier(
+    fetchMoreMovies: fetchMoreMovies,
   );
 });
