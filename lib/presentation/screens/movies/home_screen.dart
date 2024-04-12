@@ -39,18 +39,48 @@ class _HomeViewState extends ConsumerState<_HomeView> {
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideshowMovies = ref.watch(moviesSlideshowProvider);
 
-    return Column(
-      children: [
-        const CustomAppBar(),
-        MoviesSlideshow(
-          movies: slideshowMovies,
+    return CustomScrollView(
+      slivers: [
+        const SliverAppBar(
+          floating: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: CustomAppBar(),
+            titlePadding: EdgeInsets.zero,
+          ),
         ),
-        MovieHorizontalListView(
-          movies: nowPlayingMovies,
-          title: 'En Cines',
-          subtitle: 'Lunes 20',
-          loadNextPage:
-              ref.read(nowPlayingMoviesProvider.notifier).loadNextPage,
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            childCount: 1,
+            (context, index) => Column(
+              children: [
+                MoviesSlideshow(
+                  movies: slideshowMovies,
+                ),
+                MovieHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'In Theaters',
+                  subtitle: 'Monday 20th',
+                  loadNextPage:
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage,
+                ),
+                MovieHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Soon',
+                  subtitle: 'This month',
+                  loadNextPage:
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage,
+                ),
+                MovieHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Populars',
+                  subtitle: 'This month',
+                  loadNextPage:
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage,
+                ),
+                const SizedBox(height: 10)
+              ],
+            ),
+          ),
         )
       ],
     );
