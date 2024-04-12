@@ -39,3 +39,12 @@ final nowPlayingMoviesProvider =
     fetchMoreMovies: getNowPlayingMovies,
   );
 });
+
+final upcomingMoviesProvider =
+    StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
+  final getUpcomingMovies = ref.watch(movieRepositoryProvider).getUpcoming;
+
+  return MoviesNotifier(
+    fetchMoreMovies: getUpcomingMovies,
+  );
+});
