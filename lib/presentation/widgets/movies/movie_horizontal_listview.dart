@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:go_router/go_router.dart';
 
 class MovieHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
@@ -137,30 +138,33 @@ class _Slide extends StatelessWidget {
                 borderRadius: BorderRadius.circular(
                   20,
                 ),
-                child: Image.network(
-                  movie.posterPath,
-                  width: 150,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress != null) {
-                      return Container(
-                        color: Colors.black12,
-                        alignment: Alignment.center,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
+                child: GestureDetector(
+                  onTap: () => context.push('/movie/${movie.id}'),
+                  child: Image.network(
+                    movie.posterPath,
+                    width: 150,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress != null) {
+                        return Container(
+                          color: Colors.black12,
+                          alignment: Alignment.center,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
 
-                    return FadeIn(
-                      child: child,
-                    );
-                  },
+                      return FadeIn(
+                        child: child,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
