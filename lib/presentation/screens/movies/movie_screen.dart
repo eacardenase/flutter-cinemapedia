@@ -25,6 +25,7 @@ class _MovieScreenState extends ConsumerState<MovieScreen> {
     super.initState();
 
     ref.read(movieDetailProvider.notifier).loadMovie(widget.movieId);
+    ref.read(actorsByMovieProvider.notifier).loadActors(widget.movieId);
   }
 
   @override
@@ -77,7 +78,7 @@ class _MovieDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -111,9 +112,8 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
-
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Wrap(
             children: [
               for (var genre in movie.genreIds)
@@ -129,8 +129,10 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
-        // TODO: Show cast
-        const SizedBox(height: 100),
+        _ActorsByMovie(
+          movieId: movie.id.toString(),
+        ),
+        const SizedBox(height: 50),
       ],
     );
   }
@@ -193,13 +195,81 @@ class _CustomSliverAppBar extends StatelessWidget {
         ),
         titlePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         centerTitle: false,
-        title: Text(
-          movie.title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: Colors.white),
+        // title: Text(
+        //   movie.title,
+        //   style: Theme.of(context)
+        //       .textTheme
+        //       .titleLarge
+        //       ?.copyWith(color: Colors.white),
+        // ),
+      ),
+    );
+  }
+}
+
+class _ActorsByMovie extends ConsumerWidget {
+  final String movieId;
+
+  const _ActorsByMovie({
+    required this.movieId,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actorsByMovie = ref.watch(actorsByMovieProvider);
+    final textTheme = Theme.of(context).textTheme;
+
+    if (actorsByMovie[movieId] == null) {
+      return const Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
         ),
+      );
+    }
+
+    final actors = actorsByMovie[movieId]!;
+
+    return SizedBox(
+      height: 300,
+      child: ListView.builder(
+        itemCount: actors.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          final actor = actors[index];
+
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            width: 135,
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    actor.profilePath,
+                    height: 180,
+                    width: 125,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  actor.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: textTheme.titleSmall,
+                ),
+                Text(
+                  actor.character ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodySmall,
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
