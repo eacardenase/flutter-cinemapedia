@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:card_swiper/card_swiper.dart';
 
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:go_router/go_router.dart';
 
 class MoviesSlideshow extends StatelessWidget {
   final List<Movie> movies;
@@ -32,7 +33,14 @@ class MoviesSlideshow extends StatelessWidget {
           ),
         ),
         itemCount: movies.length,
-        itemBuilder: (context, index) => _Slide(movie: movies[index]),
+        itemBuilder: (context, index) {
+          final movie = movies[index];
+
+          return GestureDetector(
+            onTap: () => context.push("/movie/${movie.id}"),
+            child: _Slide(movie: movie),
+          );
+        },
       ),
     );
   }
