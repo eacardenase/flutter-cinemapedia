@@ -9,7 +9,7 @@ class ActorMapper {
         name: cast.name,
         profilePath: cast.profilePath != null
             ? 'https://image.tmdb.org/t/p/w500${cast.profilePath}'
-            : 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg',
+            : 'https://qph.cf2.quoracdn.net/main-qimg-2b21b9dd05c757fe30231fac65b504dd',
         character: cast.character,
       );
 }
