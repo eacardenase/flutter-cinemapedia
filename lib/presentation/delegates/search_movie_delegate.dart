@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
 
-class SearchMovieDelegate extends SearchDelegate {
+import 'package:animate_do/animate_do.dart';
+
+import 'package:cinemapedia/domain/entities/movie.dart';
+
+class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   String get searchFieldLabel => 'Search movie';
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
-      const Text('Build Actions'),
+      if (query.isNotEmpty)
+        FadeIn(
+          child: IconButton(
+            onPressed: () => query = '',
+            icon: Icon(
+              Icons.clear,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
     ];
   }
 
   @override
   Widget? buildLeading(BuildContext context) {
-    return const Text('Build Leading');
+    return IconButton(
+      onPressed: () => close(context, null),
+      icon: Icon(
+        Icons.chevron_left,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+    );
   }
 
   @override
