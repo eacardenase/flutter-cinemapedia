@@ -57,6 +57,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           itemCount: movies.length,
           itemBuilder: (context, index) => _MovieSearchItem(
             movie: movies[index],
+            onMovieSelected: close,
           ),
         );
       },
@@ -66,9 +67,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
 class _MovieSearchItem extends StatelessWidget {
   final Movie movie;
+  final void Function(BuildContext, Movie?) onMovieSelected;
 
   const _MovieSearchItem({
     required this.movie,
+    required this.onMovieSelected,
   });
 
   @override
@@ -76,69 +79,72 @@ class _MovieSearchItem extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 150,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            SizedBox(
-              height: double.infinity,
-              width: size.width * 0.25,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  movie.posterPath,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) => FadeIn(
-                    child: child,
+    return GestureDetector(
+      onTap: () => onMovieSelected(context, movie),
+      child: SizedBox(
+        height: 150,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              SizedBox(
+                height: double.infinity,
+                width: size.width * 0.25,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    movie.posterPath,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) => FadeIn(
+                      child: child,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            // Movie Desc
-            SizedBox(
-              width: size.width * 0.65,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    movie.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.titleMedium,
-                  ),
-                  Text(
-                    movie.overview,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyMedium,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_half_outlined,
-                        color: Colors.yellow.shade800,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        movie.voteAverage.toStringAsFixed(1),
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: Colors.yellow.shade900,
+              const SizedBox(width: 10),
+              // Movie Desc
+              SizedBox(
+                width: size.width * 0.65,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      movie.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.titleMedium,
+                    ),
+                    Text(
+                      movie.overview,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyMedium,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star_half_outlined,
+                          color: Colors.yellow.shade800,
                         ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          movie.voteAverage.toStringAsFixed(1),
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Colors.yellow.shade900,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
