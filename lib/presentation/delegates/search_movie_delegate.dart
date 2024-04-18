@@ -7,9 +7,10 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
-  final Future<List<Movie>> Function(String) searchMovies;
-  StreamController<List<Movie>> debouncedMovies = StreamController.broadcast();
   Timer? _debounceTimer;
+  final Future<List<Movie>> Function(String) searchMovies;
+  final StreamController<List<Movie>> debouncedMovies =
+      StreamController.broadcast();
 
   SearchMovieDelegate({
     required this.searchMovies,
@@ -19,15 +20,23 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   String get searchFieldLabel => 'Search movie';
 
   void _onQueryChanged(String query) {
-    print('Query string changed');
-
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
 
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      // TODO: search movies and emit to stream
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (query.isEmpty) {
+        debouncedMovies.add([]);
 
-      print('Searching movies');
+        return;
+      }
+
+      final movies = await searchMovies(query);
+
+      debouncedMovies.add(movies);
     });
+  }
+
+  void _clearStreams() {
+    debouncedMovies.close();
   }
 
   @override
@@ -49,7 +58,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () => close(context, null),
+      onPressed: () {
+        _clearStreams();
+
+        close(context, null);
+      },
       icon: Icon(
         Icons.chevron_left,
         color: Theme.of(context).colorScheme.primary,
@@ -69,16 +82,22 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     return StreamBuilder(
       stream: debouncedMovies.stream,
       builder: (context, snapshot) {
-        // TODO: print('Realizando peticion');
-
         final movies = snapshot.data ?? [];
 
         return ListView.builder(
           itemCount: movies.length,
-          itemBuilder: (context, index) => _MovieSearchItem(
-            movie: movies[index],
-            onMovieSelected: close,
-          ),
+          itemBuilder: (context, index) {
+            final movie = movies[index];
+
+            return _MovieSearchItem(
+              movie: movie,
+              onMovieSelected: (context, movie) {
+                _clearStreams();
+
+                close(context, movie);
+              },
+            );
+          },
         );
       },
     );
