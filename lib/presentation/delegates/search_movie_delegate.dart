@@ -5,6 +5,12 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
+  final Future<List<Movie>> Function(String) searchMovies;
+
+  SearchMovieDelegate({
+    required this.searchMovies,
+  });
+
   @override
   String get searchFieldLabel => 'Search movie';
 
@@ -42,6 +48,24 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return const Text('Build Suggestions');
+    return FutureBuilder(
+      future: searchMovies(query),
+      builder: (context, snapshot) {
+        final movies = snapshot.data ?? [];
+
+        return ListView.builder(
+          itemCount: movies.length,
+          itemBuilder: (context, index) {
+            final movie = movies[index];
+
+            return ListTile(
+              title: Text(
+                movie.title,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
