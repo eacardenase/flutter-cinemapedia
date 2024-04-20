@@ -12,6 +12,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   List<Movie> initialMovies;
   final StreamController<List<Movie>> debouncedMovies =
       StreamController.broadcast();
+  StreamController<bool> isLoadingStream = StreamController.broadcast();
 
   SearchMovieDelegate({
     required this.onSearchMovies,
@@ -25,12 +26,14 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   void _onQueryChanged(String query) {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    isLoadingStream.add(true);
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       final movies = await onSearchMovies(query);
       initialMovies = movies;
 
       debouncedMovies.add(movies);
+      isLoadingStream.add(false);
     });
   }
 
@@ -62,21 +65,43 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   void _clearStreams() {
     debouncedMovies.close();
+    isLoadingStream.close();
   }
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
-      if (query.isNotEmpty)
-        FadeIn(
-          child: IconButton(
-            onPressed: () => query = '',
-            icon: Icon(
-              Icons.clear,
-              color: Theme.of(context).colorScheme.primary,
+      StreamBuilder(
+        stream: isLoadingStream.stream,
+        builder: (context, snapshot) {
+          final isLoading = snapshot.data ?? false;
+
+          if (isLoading) {
+            return SpinPerfect(
+              duration: const Duration(seconds: 2),
+              infinite: true,
+              child: IconButton(
+                onPressed: null,
+                icon: Icon(
+                  Icons.refresh,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            );
+          }
+
+          return FadeIn(
+            animate: query.isNotEmpty,
+            child: IconButton(
+              onPressed: () => query = '',
+              icon: Icon(
+                Icons.clear,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-          ),
-        ),
+          );
+        },
+      ),
     ];
   }
 
