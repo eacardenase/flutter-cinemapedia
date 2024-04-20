@@ -8,12 +8,14 @@ import 'package:cinemapedia/domain/entities/movie.dart';
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   Timer? _debounceTimer;
-  final Future<List<Movie>> Function(String) searchMovies;
+  final Future<List<Movie>> Function(String) onSearchMovies;
+  final List<Movie> initialMovies;
   final StreamController<List<Movie>> debouncedMovies =
       StreamController.broadcast();
 
   SearchMovieDelegate({
-    required this.searchMovies,
+    required this.onSearchMovies,
+    this.initialMovies = const [],
   });
 
   @override
@@ -23,13 +25,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
-      if (query.isEmpty) {
-        debouncedMovies.add([]);
-
-        return;
-      }
-
-      final movies = await searchMovies(query);
+      final movies = await onSearchMovies(query);
 
       debouncedMovies.add(movies);
     });
@@ -81,6 +77,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
     return StreamBuilder(
       stream: debouncedMovies.stream,
+      initialData: initialMovies,
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
 
