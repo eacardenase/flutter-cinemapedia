@@ -8,16 +8,18 @@ import 'package:cinemapedia/domain/entities/movie.dart';
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   Timer? _debounceTimer;
-  final Future<List<Movie>> Function(String) onSearchMovies;
-  List<Movie> initialMovies;
-  final StreamController<List<Movie>> debouncedMovies =
+  final Future<List<Movie>> Function(String) _onSearchMovies;
+  List<Movie> _initialMovies;
+  final StreamController<List<Movie>> _debouncedMovies =
       StreamController.broadcast();
-  StreamController<bool> isLoadingStream = StreamController.broadcast();
+  final StreamController<bool> _isLoadingStream = StreamController.broadcast();
 
   SearchMovieDelegate({
-    required this.onSearchMovies,
-    this.initialMovies = const [],
-  }) : super(
+    required Future<List<Movie>> Function(String) onSearchMovies,
+    List<Movie> initialMovies = const [],
+  })  : _initialMovies = initialMovies,
+        _onSearchMovies = onSearchMovies,
+        super(
           textInputAction: TextInputAction.search,
         );
 
@@ -26,21 +28,21 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   void _onQueryChanged(String query) {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    isLoadingStream.add(true);
+    _isLoadingStream.add(true);
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
-      final movies = await onSearchMovies(query);
-      initialMovies = movies;
+      final movies = await _onSearchMovies(query);
+      _initialMovies = movies;
 
-      debouncedMovies.add(movies);
-      isLoadingStream.add(false);
+      _debouncedMovies.add(movies);
+      _isLoadingStream.add(false);
     });
   }
 
   Widget _buildQueryResults() {
     return StreamBuilder(
-      stream: debouncedMovies.stream,
-      initialData: initialMovies,
+      stream: _debouncedMovies.stream,
+      initialData: _initialMovies,
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
 
@@ -64,15 +66,15 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   }
 
   void _clearStreams() {
-    debouncedMovies.close();
-    isLoadingStream.close();
+    _debouncedMovies.close();
+    _isLoadingStream.close();
   }
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
       StreamBuilder(
-        stream: isLoadingStream.stream,
+        stream: _isLoadingStream.stream,
         builder: (context, snapshot) {
           final isLoading = snapshot.data ?? false;
 
