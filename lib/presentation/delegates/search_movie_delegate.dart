@@ -79,14 +79,17 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           final isLoading = snapshot.data ?? false;
 
           if (isLoading) {
-            return SpinPerfect(
-              duration: const Duration(seconds: 2),
-              infinite: true,
-              child: IconButton(
-                onPressed: null,
-                icon: Icon(
-                  Icons.refresh,
-                  color: Theme.of(context).colorScheme.primary,
+            return Visibility(
+              visible: query.isNotEmpty,
+              child: SpinPerfect(
+                duration: const Duration(seconds: 2),
+                infinite: true,
+                child: IconButton(
+                  onPressed: null,
+                  icon: Icon(
+                    Icons.refresh,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             );
