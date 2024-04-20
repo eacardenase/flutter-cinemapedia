@@ -30,11 +30,21 @@ class CustomAppBar extends ConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () async {
+                  final searchQuery = ref.watch(searchQueryProvider);
+
                   final movie = await showSearch<Movie?>(
                     context: context,
+                    query: searchQuery,
                     delegate: SearchMovieDelegate(
-                      searchMovies:
-                          ref.read(movieRepositoryProvider).searchMovies,
+                      searchMovies: (query) {
+                        ref
+                            .read(searchQueryProvider.notifier)
+                            .update((state) => query);
+
+                        return ref
+                            .read(movieRepositoryProvider)
+                            .searchMovies(query);
+                      },
                     ),
                   );
 
