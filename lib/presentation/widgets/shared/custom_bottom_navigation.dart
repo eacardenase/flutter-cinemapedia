@@ -43,36 +43,44 @@ class CustomBottomNavigation extends StatelessWidget {
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       destinations: const [
-        NavigationDestination(
+        _CustomNavigationDestination(
           label: 'Home',
-          icon: _NavigationIcon(Icons.home_outlined),
-          selectedIcon: _NavigationIcon(Icons.home),
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home,
         ),
-        NavigationDestination(
+        _CustomNavigationDestination(
           label: 'Categories',
-          icon: _NavigationIcon(Icons.label_outline),
-          selectedIcon: _NavigationIcon(Icons.label),
+          icon: Icons.label_outline,
+          selectedIcon: Icons.label,
         ),
-        NavigationDestination(
+        _CustomNavigationDestination(
           label: 'Favorites',
-          icon: _NavigationIcon(Icons.favorite_outline),
-          selectedIcon: _NavigationIcon(Icons.favorite),
+          icon: Icons.favorite_outline,
+          selectedIcon: Icons.favorite,
         ),
       ],
     );
   }
 }
 
-class _NavigationIcon extends StatelessWidget {
+class _CustomNavigationDestination extends StatelessWidget {
+  final String label;
   final IconData icon;
+  final IconData selectedIcon;
 
-  const _NavigationIcon(this.icon);
+  const _CustomNavigationDestination({
+    required this.label,
+    required this.icon,
+    required this.selectedIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
-      icon,
-      color: Theme.of(context).colorScheme.primary,
+    return NavigationDestination(
+      label: label,
+      icon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      selectedIcon:
+          Icon(selectedIcon, color: Theme.of(context).colorScheme.primary),
     );
   }
 }
