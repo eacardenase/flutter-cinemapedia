@@ -41,6 +41,7 @@ class CustomBottomNavigation extends StatelessWidget {
       selectedIndex: getCurrentIndex(context),
       onDestinationSelected: (index) => _onItemTapped(context, index),
       indicatorColor: Colors.transparent,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       destinations: const [
         NavigationDestination(
           label: 'Home',
