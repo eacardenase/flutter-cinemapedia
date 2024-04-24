@@ -22,7 +22,7 @@ class IsarDatabaseDatasource extends LocalDatabaseDatasource {
   }
 
   @override
-  Future<void> toggleFavorite(Movie movie) async {
+  Future<bool> toggleFavorite(Movie movie) async {
     final isar = await db;
 
     final favoriteMovie =
@@ -31,10 +31,12 @@ class IsarDatabaseDatasource extends LocalDatabaseDatasource {
     if (favoriteMovie != null) {
       isar.writeTxnSync(() => isar.movies.deleteSync(favoriteMovie.isarId!));
 
-      return;
+      return false;
     }
 
     isar.writeTxnSync(() => isar.movies.putSync(movie));
+
+    return true;
   }
 
   @override

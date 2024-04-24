@@ -14,8 +14,10 @@ class _FavoriteMoviesNotifier extends StateNotifier<Map<int, Movie>> {
         super({});
 
   Future<List<Movie>> loadNextPage() async {
-    final movies =
-        await _localDatabaseRepository.loadMovies(offset: _currentPage * 10);
+    final movies = await _localDatabaseRepository.loadMovies(
+      offset: _currentPage * 10,
+      limit: 20,
+    );
 
     _currentPage++;
 
@@ -31,6 +33,28 @@ class _FavoriteMoviesNotifier extends StateNotifier<Map<int, Movie>> {
     };
 
     return movies;
+  }
+
+  Future<bool> toggleFavorite(Movie movie) async {
+    final bool isMovieInFavorites =
+        await _localDatabaseRepository.toggleFavorite(movie);
+
+    if (!isMovieInFavorites) {
+      state.remove(movie.id);
+
+      state = {
+        ...state,
+      };
+
+      return false;
+    }
+
+    state = {
+      ...state,
+      movie.id: movie,
+    };
+
+    return true;
   }
 }
 

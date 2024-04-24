@@ -1,7 +1,7 @@
 import 'package:cinemapedia/domain/entities/movie.dart';
 
 abstract class LocalDatabaseDatasource {
-  Future<void> toggleFavorite(Movie movie);
+  Future<bool> toggleFavorite(Movie movie);
 
   Future<bool> isFavorite(int movieId);
 

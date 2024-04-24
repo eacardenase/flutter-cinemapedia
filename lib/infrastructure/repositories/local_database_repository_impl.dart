@@ -20,7 +20,7 @@ class LocalDatabaseRepositoryImpl extends LocalDatabaseRepository {
   }
 
   @override
-  Future<void> toggleFavorite(Movie movie) {
+  Future<bool> toggleFavorite(Movie movie) {
     return _datasource.toggleFavorite(movie);
   }
 }
