@@ -19,6 +19,8 @@ class _FavoriteMoviesNotifier extends StateNotifier<Map<int, Movie>> {
     final movies =
         await _localDatabaseRepository.loadMovies(offset: _currentPage);
 
+    print(movies);
+
     final tempMoviesMap = {};
 
     for (var movie in movies) {

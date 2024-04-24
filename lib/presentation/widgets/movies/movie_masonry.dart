@@ -7,7 +7,7 @@ import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
 class MovieMansonry extends StatefulWidget {
   final List<Movie> movies;
-  final void Function() loadNextPage;
+  final void Function()? loadNextPage;
 
   const MovieMansonry({
     super.key,
@@ -20,14 +20,35 @@ class MovieMansonry extends StatefulWidget {
 }
 
 class _MovieMansonryState extends State<MovieMansonry> {
-  // TODO: initState
-  // TODO: dispose
+  final scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController.addListener(() {
+      if (widget.loadNextPage == null) return;
+
+      if ((scrollController.position.pixels + 200) >=
+          scrollController.position.maxScrollExtent) {
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: MasonryGridView.count(
+        controller: scrollController,
         crossAxisCount: 3,
         itemCount: widget.movies.length,
         mainAxisSpacing: 10,
