@@ -13,6 +13,21 @@ class FavoriteView extends ConsumerStatefulWidget {
 }
 
 class _FavoriteViewState extends ConsumerState<FavoriteView> {
+  var isLoading = false;
+  var isLastPage = false;
+
+  void loadNextPage() async {
+    if (isLoading || isLastPage) return;
+
+    isLoading = true;
+
+    final movies =
+        await ref.read(favoriteMoviesProvider.notifier).loadNextPage();
+
+    isLoading = false;
+    isLastPage = movies.isEmpty;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -28,7 +43,7 @@ class _FavoriteViewState extends ConsumerState<FavoriteView> {
     return Scaffold(
       body: MovieMansonry(
         movies: favoriteMovies,
-        loadNextPage: ref.read(favoriteMoviesProvider.notifier).loadNextPage,
+        loadNextPage: loadNextPage,
       ),
     );
   }

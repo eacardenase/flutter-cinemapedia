@@ -14,12 +14,10 @@ class _FavoriteMoviesNotifier extends StateNotifier<Map<int, Movie>> {
         super({});
 
   Future<List<Movie>> loadNextPage() async {
-    _currentPage++;
-
     final movies =
-        await _localDatabaseRepository.loadMovies(offset: _currentPage);
+        await _localDatabaseRepository.loadMovies(offset: _currentPage * 10);
 
-    print(movies);
+    _currentPage++;
 
     final tempMoviesMap = {};
 
