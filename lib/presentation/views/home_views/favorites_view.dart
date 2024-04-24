@@ -40,6 +40,37 @@ class _FavoriteViewState extends ConsumerState<FavoriteView> {
     final favoritesMap = ref.watch(favoriteMoviesProvider);
     final favoriteMovies = favoritesMap.values.toList();
 
+    if (favoriteMovies.isEmpty) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.favorite_border,
+              size: 60,
+              color: colorScheme.primary,
+            ),
+            Text(
+              'Oh no!!',
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.primary,
+                fontSize: 30,
+              ),
+            ),
+            Text(
+              "You don't have favorite movies yet...",
+              style: textTheme.bodyMedium?.copyWith(
+                  // fontSize: 20,
+                  ),
+            )
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       body: MovieMansonry(
         movies: favoriteMovies,
