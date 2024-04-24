@@ -5,18 +5,21 @@ import 'package:cinemapedia/domain/repositories/local_database_repository.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 
 class _FavoriteMoviesNotifier extends StateNotifier<Map<int, Movie>> {
-  int page = 0;
-  final LocalDatabaseRepository localDatabaseRepository;
+  int _currentPage = 0;
+  final LocalDatabaseRepository _localDatabaseRepository;
 
   _FavoriteMoviesNotifier({
-    required this.localDatabaseRepository,
-  }) : super({});
+    required LocalDatabaseRepository localDatabaseRepository,
+  })  : _localDatabaseRepository = localDatabaseRepository,
+        super({});
 
   Future<List<Movie>> loadNextPage() async {
-    final movies = await localDatabaseRepository.loadMovies(offset: page * 10);
-    final tempMoviesMap = {};
+    _currentPage++;
 
-    page++;
+    final movies =
+        await _localDatabaseRepository.loadMovies(offset: _currentPage);
+
+    final tempMoviesMap = {};
 
     for (var movie in movies) {
       tempMoviesMap[movie.id] = movie;
