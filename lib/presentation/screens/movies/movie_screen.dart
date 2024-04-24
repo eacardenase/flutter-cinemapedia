@@ -158,6 +158,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
+    final isFavoriteFuture = ref.watch(isFavoriteMovieProvider(movie.id));
 
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -165,15 +166,18 @@ class _CustomSliverAppBar extends ConsumerWidget {
       foregroundColor: Colors.white,
       actions: [
         IconButton(
-          onPressed: () =>
-              ref.read(localDatabaseRepositoryProvider).toggleFavorite(movie),
-          // icon: const Icon(
-          //   Icons.favorite,
-          //   color: Colors.red,
-          // ),
-          icon: const Icon(
-            Icons.favorite_outline,
-            color: Colors.red,
+          onPressed: () async {
+            await ref
+                .read(localDatabaseRepositoryProvider)
+                .toggleFavorite(movie);
+            ref.invalidate(isFavoriteMovieProvider(movie.id));
+          },
+          icon: isFavoriteFuture.when(
+            loading: () => const Icon(Icons.favorite_outline),
+            data: (isFavorite) => isFavorite
+                ? const Icon(Icons.favorite, color: Colors.red)
+                : const Icon(Icons.favorite_outline, color: Colors.red),
+            error: (_, __) => throw UnimplementedError(),
           ),
         )
       ],
